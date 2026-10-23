@@ -1,8 +1,0 @@
-import React from 'react';
-import {ScrollView,Text,View} from 'react-native';
-import {router} from 'expo-router';
-import {C} from '../../src/theme/colors';
-import {PageTitle,Field,Btn} from '../../src/components/UI';
-import {demoJob} from '../../src/data/mock';
-import {useDemo} from '../../src/store/useDemo';
-export default function New(){const job=useDemo(s=>s.job);const setJob=useDemo(s=>s.setJob);const valid=job.title.trim()&&job.description.trim();return <ScrollView keyboardShouldPersistTaps="handled" style={{backgroundColor:C.bg}} contentContainerStyle={{padding:20,paddingBottom:50}}><PageTitle title="Qual vaga você deseja?" subtitle="Conte um pouco sobre a oportunidade. Vamos comparar os requisitos ao seu currículo."/><Btn title="Preencher com exemplo" secondary onPress={()=>setJob(demoJob)}/><View style={{height:22}}/><Field label="Título da vaga *" placeholder="Ex.: Desenvolvedor Python Júnior" value={job.title} onChangeText={title=>setJob({title})}/><Field label="Empresa" placeholder="Ex.: Tech Solutions" value={job.company} onChangeText={company=>setJob({company})}/><Field label="Modalidade" placeholder="Remoto, híbrido ou presencial" value={job.mode} onChangeText={mode=>setJob({mode})}/><Field label="Descrição da vaga *" multiline placeholder="Cole aqui a descrição da vaga" value={job.description} onChangeText={description=>setJob({description})}/><Field label="Requisitos" multiline placeholder="Python, Flask, Docker..." value={job.requirements} onChangeText={requirements=>setJob({requirements})}/><Text style={{color:C.muted,fontSize:12}}>Campos com * são obrigatórios.</Text><Btn title="Continuar →" disabled={!valid} onPress={()=>router.push('/analysis/upload')}/></ScrollView>}

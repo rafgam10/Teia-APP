@@ -1,56 +1,75 @@
-# Welcome to your Expo app 👋
+# TEIA Carreiras
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+MVP mobile demonstrativo de análise de currículo e jornada de qualificação, com **Expo SDK 58, React Native, TypeScript, Expo Router, Zustand e AsyncStorage**.
 
-## Get started
+**Não há backend, autenticação, banco remoto ou IA.** Resultados, experiências e roteiros são fictícios. Nenhum documento é enviado ou lido.
 
-1. Install dependencies
+## Executar
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Requer Node.js compatível com o Expo SDK 58 (22.13+; validado com Node 24) e npm.
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+- Android: pressione `a` com um emulador disponível ou abra pelo Expo Go compatível com o SDK 58.
+- iOS: use um dispositivo com Expo Go compatível ou o simulador em um Mac.
+- Navegador: pressione `w` ou execute `npm run web`.
+- Se estiver vendo o antigo template, reinicie com `npx expo start --clear`.
 
-### Other setup steps
+Document Picker e AsyncStorage são incluídos no Expo Go para este SDK. Para módulos nativos que não estejam incluídos, será necessário um development build. Nenhum projeto `android/` ou `ios/` precisa ser editado manualmente.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Roteiro para apresentação
 
-## Learn more
+1. No início, veja as duas análises fictícias e a jornada inicial de Projetos (2/6 tarefas).
+2. Toque em **Nova análise → Preencher com exemplo → Continuar**.
+3. Use o currículo de demonstração ou selecione PDF/DOCX de até 10 MB.
+4. Toque em **Analisar compatibilidade**. Após cerca de 3 segundos, veja o resultado simulado de **78%** para o exemplo de Python.
+5. Toque em **Criar jornada**. O roteiro contém nove atividades de Docker, Pytest e CI/CD.
+6. Marque/desmarque tarefas ou abra seus detalhes. O início e a jornada mostram o mesmo progresso.
+7. Reabra o aplicativo para demonstrar persistência. O histórico permite pesquisa e filtros.
+8. Acesse Perfil pelo avatar e Configurações pelo início ou perfil. A restauração de dados pede confirmação.
 
-To learn more about developing your project with Expo, look at the following resources:
+Vagas diferentes do exemplo recebem **65% como valor fixo explicitamente fictício**, com recomendações genéricas; isso não é uma análise dos requisitos reais. Abrir um resultado novamente não cria outra análise. Cada nova solicitação tem um identificador próprio e uma jornada independente. Um formulário ainda não enviado é retomado ao voltar pela ação Nova análise, inclusive após reabrir o app.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Telas
 
-## Join the community
+Tabs: **Início**, **Análises**, **Jornada**, **Currículo**.
 
-Join our community of developers creating universal apps.
+Stack: **Nova análise**, **Anexar currículo**, **Processamento**, **Resultado**, **Detalhes da atividade**, **Perfil**, **Configurações**.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+As rotas estão exclusivamente em `src/app/`. O antigo `app/` foi incorporado a essa estrutura porque o Expo prioriza `src/app/` quando ambos existem.
+
+## Dados locais e privacidade
+
+- O estado é separado em slices de usuário, análises, currículo e jornadas, persistidos em um único snapshot coerente.
+- A chave do AsyncStorage é `teia-carreiras-mvp`.
+- Somente metadados do documento (nome, tipo, tamanho e identificador) são mantidos; não são persistidos URI, base64 ou conteúdo.
+- O perfil editável é local; análises usam a personagem demonstrativa Marina Ferreira, independentemente do arquivo selecionado.
+- AsyncStorage não é criptografado. Não use informações sensíveis nesta demonstração.
+- Links de aprendizagem abrem sites externos apenas mediante toque e exigem internet.
+- Para restaurar a demonstração, use **Configurações → Restaurar dados mockados**, não o script de template `reset-project`.
+
+## Verificações
+
+```bash
+npm test
+npx tsc --noEmit
+npx expo lint
+npx expo install --check
+npx expo-doctor
+```
+
+`npm test` executa 15 testes de domínio/persistência com o test runner do Node e o TypeScript já instalado, sem dependências adicionais de teste.
+
+Para verificar os bundles (não gera APK/IPA nem exige projetos nativos):
+
+```bash
+npx expo export --platform web
+npx expo export --platform android --platform ios
+```
+
+O web é uma SPA, sem servidor de aplicação. Ao publicar em hospedagem estática, configure fallback das rotas para `index.html`.
+
+Consulte [docs/ENTREGA_MVP.md](docs/ENTREGA_MVP.md) para auditoria, arquivos alterados, validações e limitações.

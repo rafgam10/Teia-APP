@@ -1,12 +1,31 @@
-import {create} from 'zustand';
-import {Analysis, initialAnalyses, initialTasks, demoJob} from '../data/mock';
-type Job={title:string;company:string;mode:string;description:string;requirements:string};
-type Task=(typeof initialTasks)[number];
-type State={job:Job;fileName:string;analyses:Analysis[];tasks:Task[];setJob:(value:Partial<Job>)=>void;setFile:(name:string)=>void;addDemoAnalysis:()=>void;toggleTask:(id:number)=>void};
-export const useDemo=create<State>((set)=>({
- job:{title:'',company:'',mode:'Remoto',description:'',requirements:''},fileName:'',analyses:initialAnalyses,tasks:initialTasks,
- setJob:(value)=>set(s=>({job:{...s.job,...value}})),
- setFile:(name)=>set({fileName:name}),
- addDemoAnalysis:()=>set(s=>({analyses:s.analyses.some(a=>a.id==='python')?s.analyses:[{id:'python',title:s.job.title||demoJob.title,company:s.job.company||demoJob.company,score:78,status:'Jornada iniciada'},...s.analyses]})),
- toggleTask:(id)=>set(s=>({tasks:s.tasks.map(t=>t.id===id?{...t,done:!t.done}:t)})),
-}));
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useStore } from 'zustand';
+import { createDemoStore } from './createDemoStore';
+import { queuedStorage } from './persistence';
+import type { DemoState } from './types';
+
+const storage = queuedStorage(AsyncStorage, message => {
+  demoStore.getState().setStorageError(message);
+});
+export const demoStore = createDemoStore(storage);
+
+export async function savePendingChanges() {
+  await storage.flush();
+  return !demoStore.getState().storageError;
+}
+
+export async function retryLocalSave() {
+  demoStore.setState({ storageError: null });
+  return savePendingChanges();
+}
+
+export function useDemo<T>(selector: (state: DemoState) => T): T {
+  return useStore(demoStore, selector);
+}
+
+let hydration: Promise<void> | undefined;
+export function hydrateDemo() {
+  // Safe under Strict Mode, and never reads AsyncStorage during server rendering.
+  hydration ??= Promise.resolve(demoStore.persist.rehydrate());
+  return hydration;
+}
